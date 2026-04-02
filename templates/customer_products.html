@@ -15,7 +15,10 @@
     <div class="nav-brand">🛍 Marketplace</div>
     <div class="nav-actions">
         <a href="/customer/dashboard" class="nav-link">← Home</a>
-        <a href="#" class="nav-icon" title="Cart">🛒</a>
+        <a href="/cart" class="nav-icon nav-cart-icon" title="Cart">
+        🛒
+        <span class="cart-badge" style="display:none;">0</span>
+    </a>
         <a href="/profile" class="nav-icon" title="Profile">👤</a>
         <button class="btn-logout" id="logoutBtn">Logout</button>
     </div>
@@ -147,6 +150,7 @@
     </div>
 </footer>
 
+<script src="/static/cart.js"></script>
 <script src="/static/dashboard.js"></script>
 <script src="/static/customer_products.js"></script>
 

@@ -16,7 +16,6 @@ async function init() {
 // ── Get product ID from URL ───────────────────────────────────────────────────
 
 function getProductIdFromUrl() {
-    // URL pattern: /product/<id>
     const parts = window.location.pathname.split("/");
     const id = parseInt(parts[parts.length - 1]);
     return isNaN(id) ? null : id;
@@ -32,12 +31,10 @@ async function loadProduct(productId) {
             window.location.href = "/login";
             return;
         }
-
         if (res.status === 404) {
             showError("This product does not exist or has been removed.");
             return;
         }
-
         if (!res.ok) {
             showError("Failed to load product. Please try again.");
             return;
@@ -56,7 +53,7 @@ async function loadProduct(productId) {
 // ── Render ────────────────────────────────────────────────────────────────────
 
 function renderProduct(p) {
-    // Breadcrumb
+    // Breadcrumb + title
     document.getElementById("breadcrumbName").textContent = p.name;
     document.title = `${p.name} – Marketplace`;
 
@@ -71,11 +68,11 @@ function renderProduct(p) {
         placeholder.classList.remove("hidden");
     }
 
-    // Category badge on image
+    // Category badge
     document.getElementById("pdCategoryBadge").textContent = p.category_name || "Uncategorized";
-
-    // Title, category, price
     document.getElementById("pdCategory").textContent = p.category_name || "Uncategorized";
+
+    // Title and price
     document.getElementById("pdTitle").textContent = p.name;
     document.getElementById("pdPrice").textContent =
         `৳${parseFloat(p.price).toLocaleString("en-BD", { minimumFractionDigits: 2 })}`;
@@ -118,14 +115,14 @@ function renderProduct(p) {
         document.getElementById("pdSellerInitial").classList.add("hidden");
     }
 
-    // Add to cart button
+    // Add to cart button and cart note
     const addCartBtn = document.getElementById("pdAddCart");
     const cartNote = document.getElementById("pdCartNote");
+
     if (p.stock_quantity > 0) {
         addCartBtn.disabled = false;
         addCartBtn.classList.remove("disabled");
-        cartNote.textContent = "Cart functionality coming soon.";
-        cartNote.className = "pd-cart-note";
+        updateCartNote(p.id);
     } else {
         addCartBtn.disabled = true;
         addCartBtn.classList.add("disabled");
@@ -136,9 +133,26 @@ function renderProduct(p) {
         document.getElementById("pdQtyPlus").disabled = true;
     }
 
-    // Show layout, hide loading
+    // Show layout
     document.getElementById("pdLoading").classList.add("hidden");
     document.getElementById("pdLayout").classList.remove("hidden");
+}
+
+// ── Cart note helper ──────────────────────────────────────────────────────────
+
+function updateCartNote(productId) {
+    const cartNote = document.getElementById("pdCartNote");
+    const inCart = Cart.get().find(i => i.id === productId);
+    if (inCart) {
+        cartNote.textContent = `✓ ${inCart.qty} in your cart — view cart`;
+        cartNote.className = "pd-cart-note in-cart";
+        cartNote.style.cursor = "pointer";
+        cartNote.onclick = () => window.location.href = "/cart";
+    } else {
+        cartNote.textContent = "";
+        cartNote.className = "pd-cart-note";
+        cartNote.onclick = null;
+    }
 }
 
 // ── Quantity controls ─────────────────────────────────────────────────────────
@@ -160,15 +174,23 @@ function setupQtyControls() {
     });
 
     document.getElementById("pdAddCart").addEventListener("click", () => {
-        // Cart not implemented yet — placeholder
+        if (!currentProduct) return;
+
+        Cart.add(currentProduct, qty);
+
+        // Button feedback
         const btn = document.getElementById("pdAddCart");
-        const originalText = document.getElementById("pdAddCartText").textContent;
-        document.getElementById("pdAddCartText").textContent = "✓ Added!";
-        btn.style.background = "var(--mocha)";
+        const btnText = document.getElementById("pdAddCartText");
+        btnText.textContent = "✓ Added to Cart!";
+        btn.classList.add("cart-added");
+
         setTimeout(() => {
-            document.getElementById("pdAddCartText").textContent = originalText;
-            btn.style.background = "";
-        }, 1500);
+            btnText.textContent = "🛒 Add to Cart";
+            btn.classList.remove("cart-added");
+        }, 1800);
+
+        // Update the cart note below the button
+        updateCartNote(currentProduct.id);
     });
 }
 
