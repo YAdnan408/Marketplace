@@ -22,3 +22,11 @@ def customer_dashboard():
 @frontend_customer_required
 def product_detail(product_id):
     return render_template("product_detail.html", user_name=session["user_name"])
+
+
+# ── Cart page ─────────────────────────────────────────────────────────────────
+
+@customer_frontend_bp.route("/cart")
+@frontend_customer_required
+def cart():
+    return render_template("cart.html", user_name=session["user_name"])
