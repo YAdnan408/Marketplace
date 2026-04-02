@@ -10,6 +10,7 @@
 </head>
 <body>
 
+<!-- ── NAVBAR ── -->
 <nav class="navbar">
     <div class="nav-brand">🛍 Marketplace</div>
     <div class="nav-actions">
@@ -20,6 +21,7 @@
     </div>
 </nav>
 
+<!-- ── CATEGORY STRIP ── -->
 <section class="category-strip">
     <div class="category-strip-inner">
         <div class="category-pill active" data-category="">
@@ -29,11 +31,61 @@
         <div class="category-pill" data-category="2"><span>💻</span> Laptops</div>
         <div class="category-pill" data-category="3"><span>👕</span> Clothing</div>
         <div class="category-pill" data-category="4"><span>🎸</span> Musical Instruments</div>
-        <div class="category-pill" data-category="5"><span>📚</span> Books & Stationery</div>
-        <div class="category-pill" data-category="6"><span>🏋️</span> Sports & Fitness</div>
+        <div class="category-pill" data-category="5"><span>📚</span> Books &amp; Stationery</div>
+        <div class="category-pill" data-category="6"><span>🏋️</span> Sports &amp; Fitness</div>
     </div>
 </section>
 
+<!-- ── FILTER BAR ── -->
+<div class="filter-bar">
+    <div class="filter-bar-inner">
+
+        <!-- Price range -->
+        <div class="filter-group">
+            <span class="filter-label">Price Range (৳)</span>
+            <div class="filter-price-inputs">
+                <input type="number" id="priceMin" class="filter-price-input" placeholder="Min" min="0">
+                <span class="filter-price-sep">–</span>
+                <input type="number" id="priceMax" class="filter-price-input" placeholder="Max" min="0">
+                <button class="filter-price-apply" id="applyPriceBtn">Apply</button>
+            </div>
+        </div>
+
+        <!-- Preset price buckets -->
+        <div class="filter-group">
+            <span class="filter-label">Quick Filters</span>
+            <div class="filter-presets">
+                <button class="filter-preset-pill" data-min="0"    data-max="500">Under ৳500</button>
+                <button class="filter-preset-pill" data-min="500"  data-max="2000">৳500–2K</button>
+                <button class="filter-preset-pill" data-min="2000" data-max="10000">৳2K–10K</button>
+                <button class="filter-preset-pill" data-min="10000" data-max="">৳10K+</button>
+            </div>
+        </div>
+
+        <!-- Sort -->
+        <div class="filter-group filter-group-sort">
+            <span class="filter-label">Sort By</span>
+            <select class="filter-sort-select" id="sortSelect">
+                <option value="default">Default</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="name_asc">Name: A–Z</option>
+                <option value="name_desc">Name: Z–A</option>
+            </select>
+        </div>
+
+        <!-- Clear all filters -->
+        <button class="filter-clear-btn hidden" id="clearFiltersBtn">✕ Clear Filters</button>
+
+    </div>
+
+    <!-- Active filter tags -->
+    <div class="filter-tags-row hidden" id="filterTagsRow">
+        <div class="filter-tags-inner" id="filterTagsInner"></div>
+    </div>
+</div>
+
+<!-- ── PRODUCTS ── -->
 <div class="products-page">
     <div class="products-page-inner">
         <div class="products-page-header">
