@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In – Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <div class="auth-header">
+            <div class="brand-logo">🛍</div>
+            <h1>Welcome Back</h1>
+            <p class="subtitle">Sign in to your account</p>
+        </div>
+
+        <!-- Account Type Toggle -->
+        <div class="role-toggle">
+            <label class="role-option">
+                <input type="radio" name="user_type" value="customer" checked>
+                <span class="role-btn">
+                    <span class="role-icon">🛒</span>
+                    Customer
+                </span>
+            </label>
+            <label class="role-option">
+                <input type="radio" name="user_type" value="seller">
+                <span class="role-btn">
+                    <span class="role-icon">🏪</span>
+                    Seller
+                </span>
+            </label>
+        </div>
+
+        <div id="errorMsg" class="error-msg hidden"></div>
+
+        <form id="loginForm">
+
+            <div class="field-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="you@example.com" required>
+            </div>
+
+            <div class="field-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn-primary" id="submitBtn">
+                <span id="btnText">Sign In</span>
+                <span id="btnLoader" class="spinner hidden"></span>
+            </button>
+
+        </form>
+
+        <p class="auth-footer">
+            Don't have an account? <a href="/signup">Sign up</a>
+        </p>
+
+    </div>
+</div>
+
+<script src="/static/login.js"></script>
+
+</body>
+</html>

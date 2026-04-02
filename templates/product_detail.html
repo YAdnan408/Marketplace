@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details – Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+    <div class="nav-brand">🛍 Marketplace</div>
+    <div class="nav-actions">
+        <a href="/products" class="nav-back">← Back to Products</a>
+        <a href="#" class="nav-icon" title="Cart">🛒</a>
+        <a href="/profile" class="nav-icon" title="Profile">👤</a>
+        <button class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
+</nav>
+
+<!-- ── BREADCRUMB ── -->
+<div class="pd-breadcrumb-wrap">
+    <div class="pd-breadcrumb">
+        <a href="/customer/dashboard">Home</a>
+        <span class="pd-breadcrumb-sep">›</span>
+        <a href="/products">Products</a>
+        <span class="pd-breadcrumb-sep">›</span>
+        <span id="breadcrumbName">Loading…</span>
+    </div>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="pd-main" id="pdMain">
+
+    <!-- Loading state -->
+    <div class="pd-loading" id="pdLoading">
+        <div class="loading-spinner"></div>
+        <p>Loading product…</p>
+    </div>
+
+    <!-- Error state -->
+    <div class="pd-error hidden" id="pdError">
+        <span>⚠️</span>
+        <p id="pdErrorMsg">Product not found.</p>
+        <a href="/products" class="hero-btn-primary">Back to Products</a>
+    </div>
+
+    <!-- Product detail layout (hidden until loaded) -->
+    <div class="pd-layout hidden" id="pdLayout">
+
+        <!-- Left: Image panel -->
+        <div class="pd-image-panel">
+            <div class="pd-image-wrap" id="pdImageWrap">
+                <img id="pdImage" src="" alt="" class="pd-image hidden">
+                <div class="pd-image-placeholder hidden" id="pdImagePlaceholder">📷</div>
+            </div>
+            <div class="pd-image-badge" id="pdCategoryBadge"></div>
+        </div>
+
+        <!-- Right: Info panel -->
+        <div class="pd-info-panel">
+
+            <div class="pd-info-top">
+                <span class="pd-category" id="pdCategory"></span>
+                <h1 class="pd-title" id="pdTitle"></h1>
+                <div class="pd-price-row">
+                    <span class="pd-price" id="pdPrice"></span>
+                    <span class="pd-stock-badge" id="pdStockBadge"></span>
+                </div>
+            </div>
+
+            <div class="pd-divider"></div>
+
+            <!-- Description -->
+            <div class="pd-section">
+                <h3 class="pd-section-label">Description</h3>
+                <p class="pd-description" id="pdDescription"></p>
+            </div>
+
+            <div class="pd-divider"></div>
+
+            <!-- Details grid -->
+            <div class="pd-section">
+                <h3 class="pd-section-label">Product Details</h3>
+                <div class="pd-details-grid">
+                    <div class="pd-detail-item">
+                        <span class="pd-detail-key">Category</span>
+                        <span class="pd-detail-val" id="pdDetailCategory"></span>
+                    </div>
+                    <div class="pd-detail-item">
+                        <span class="pd-detail-key">Stock</span>
+                        <span class="pd-detail-val" id="pdDetailStock"></span>
+                    </div>
+                    <div class="pd-detail-item">
+                        <span class="pd-detail-key">Listed on</span>
+                        <span class="pd-detail-val" id="pdDetailDate"></span>
+                    </div>
+                    <div class="pd-detail-item">
+                        <span class="pd-detail-key">Product ID</span>
+                        <span class="pd-detail-val" id="pdDetailId"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pd-divider"></div>
+
+            <!-- Seller info -->
+            <div class="pd-section">
+                <h3 class="pd-section-label">Sold by</h3>
+                <div class="pd-seller-card">
+                    <div class="pd-seller-avatar" id="pdSellerAvatar">
+                        <img id="pdSellerImg" src="" alt="" class="hidden">
+                        <span id="pdSellerInitial"></span>
+                    </div>
+                    <div class="pd-seller-info">
+                        <span class="pd-seller-name" id="pdSellerName"></span>
+                        <span class="pd-seller-meta" id="pdSellerMeta"></span>
+                    </div>
+                    <span class="pd-seller-verified">✓ Verified</span>
+                </div>
+            </div>
+
+            <div class="pd-divider"></div>
+
+            <!-- CTA -->
+            <div class="pd-cta-row">
+                <div class="pd-qty-wrap">
+                    <button class="pd-qty-btn" id="pdQtyMinus">−</button>
+                    <span class="pd-qty-val" id="pdQtyVal">1</span>
+                    <button class="pd-qty-btn" id="pdQtyPlus">+</button>
+                </div>
+                <button class="pd-add-cart-btn" id="pdAddCart" disabled>
+                    <span id="pdAddCartText">🛒 Add to Cart</span>
+                </button>
+            </div>
+            <p class="pd-cart-note" id="pdCartNote"></p>
+
+        </div>
+    </div>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <div class="footer-logo">🛍 Marketplace</div>
+            <p class="footer-tagline">Bangladesh's local marketplace for everyone.</p>
+        </div>
+        <div class="footer-links">
+            <div class="footer-col">
+                <h4>Office</h4>
+                <p class="footer-address">Road-07, House-35, Block-G, Banani</p>
+                <p class="footer-address">Road-24, House-21, Block-K, Banani</p>
+                <a href="/customer/dashboard">Home</a>
+                <a href="/products">All Products</a>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <p class="footer-phone">+880 1323933930</p>
+                <a href="#" class="footer-social-link">
+                    <svg class="footer-social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    marketplace
+                </a>
+                <a href="#" class="footer-social-link">
+                    <svg class="footer-social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                    </svg>
+                    market_place
+                </a>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <a href="/profile">My Profile</a>
+                <a href="#">My Orders</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 Marketplace. Built with ❤️ in Bangladesh.</p>
+    </div>
+</footer>
+
+<script src="/static/dashboard.js"></script>
+<script src="/static/product_detail.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Products – Marketplace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-brand">🛍 Marketplace</div>
+    <div class="nav-actions">
+        <a href="/customer/dashboard" class="nav-link">← Home</a>
+        <a href="#" class="nav-icon" title="Cart">🛒</a>
+        <a href="/profile" class="nav-icon" title="Profile">👤</a>
+        <button class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
+</nav>
+
+<section class="category-strip">
+    <div class="category-strip-inner">
+        <div class="category-pill active" data-category="">
+            <span>✦</span> All
+        </div>
+        <div class="category-pill" data-category="1"><span>📱</span> Smartphones</div>
+        <div class="category-pill" data-category="2"><span>💻</span> Laptops</div>
+        <div class="category-pill" data-category="3"><span>👕</span> Clothing</div>
+        <div class="category-pill" data-category="4"><span>🎸</span> Musical Instruments</div>
+        <div class="category-pill" data-category="5"><span>📚</span> Books & Stationery</div>
+        <div class="category-pill" data-category="6"><span>🏋️</span> Sports & Fitness</div>
+    </div>
+</section>
+
+<div class="products-page">
+    <div class="products-page-inner">
+        <div class="products-page-header">
+            <div>
+                <h2 class="products-page-title">All Products</h2>
+                <span class="products-page-count" id="pageCount">Loading…</span>
+            </div>
+            <input type="text" class="browse-search" id="pageSearch" placeholder="🔍  Search products…">
+        </div>
+        <div class="featured-grid" id="pageGrid">
+            <div class="featured-loading">
+                <div class="loading-spinner"></div>
+                <span>Loading products…</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <div class="footer-logo">🛍 Marketplace</div>
+            <p class="footer-tagline">Bangladesh's local marketplace for everyone.</p>
+        </div>
+        <div class="footer-links">
+            <div class="footer-col">
+                <h4>Office</h4>
+                <p class="footer-address">Road-07, House-35, Block-G, Banani</p>
+                <p class="footer-address">Road-24, House-21, Block-K, Banani</p>
+                <a href="/customer/dashboard">Home</a>
+                <a href="/products">All Products</a>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <p class="footer-phone">+880 1323933930</p>
+                <a href="#" class="footer-social-link">
+                    <svg class="footer-social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    marketplace
+                </a>
+                <a href="#" class="footer-social-link">
+                    <svg class="footer-social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                    </svg>
+                    market_place
+                </a>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <a href="/profile">My Profile</a>
+                <a href="#">My Orders</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 Marketplace. Built with ❤️ in Bangladesh.</p>
+    </div>
+</footer>
+
+<script src="/static/dashboard.js"></script>
+<script src="/static/customer_products.js"></script>
+
+</body>
+</html>
