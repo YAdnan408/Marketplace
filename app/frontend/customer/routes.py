@@ -30,3 +30,19 @@ def product_detail(product_id):
 @frontend_customer_required
 def cart():
     return render_template("cart.html", user_name=session["user_name"])
+
+
+# ── Checkout page ─────────────────────────────────────────────────────────────
+
+@customer_frontend_bp.route("/checkout")
+@frontend_customer_required
+def checkout():
+    return render_template("checkout.html", user_name=session["user_name"])
+
+
+# ── Order history page ────────────────────────────────────────────────────────
+
+@customer_frontend_bp.route("/orders")
+@frontend_customer_required
+def orders():
+    return render_template("orders.html", user_name=session["user_name"])

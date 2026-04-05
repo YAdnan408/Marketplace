@@ -30,8 +30,10 @@ def create_app():
     # Modules (API)
     from .modules.user.routes import user_bp
     from .modules.product.routes import product_bp
+    from .modules.order.routes import order_bp
     app.register_blueprint(user_bp)
     app.register_blueprint(product_bp)
+    app.register_blueprint(order_bp)
 
     # ── Import models so Flask-Migrate can detect them ────────────────────────
     from .models import customer, seller, product, category, order, order_item  # noqa
