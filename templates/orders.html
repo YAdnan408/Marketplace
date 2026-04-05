@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders – Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+    <div class="nav-brand">🛍 Marketplace</div>
+    <div class="nav-actions">
+        <a href="/customer/dashboard" class="nav-back">← Home</a>
+        <a href="/profile" class="nav-icon" title="Profile">👤</a>
+        <a href="/cart" class="nav-icon nav-cart-icon" title="Cart">
+            🛒
+            <span class="cart-badge" style="display:none;">0</span>
+        </a>
+        <button class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
+</nav>
+
+<!-- ── ORDERS PAGE ── -->
+<div class="orders-page">
+
+    <div class="orders-header">
+        <h2 class="orders-title">My Orders</h2>
+        <span class="orders-count" id="ordersCount"></span>
+    </div>
+
+    <div class="orders-loading" id="ordersLoading">
+        <div class="loading-spinner"></div>
+        <p>Loading your orders…</p>
+    </div>
+
+    <div class="orders-empty hidden" id="ordersEmpty">
+        <span>📦</span>
+        <h3>No orders yet</h3>
+        <p>Once you place an order, it will appear here.</p>
+        <a href="/customer/dashboard" class="hero-btn-primary">Start Shopping</a>
+    </div>
+
+    <div class="orders-list hidden" id="ordersList"></div>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <div class="footer-logo">🛍 Marketplace</div>
+            <p class="footer-tagline">Bangladesh's local marketplace for everyone.</p>
+        </div>
+        <div class="footer-links">
+            <div class="footer-col">
+                <h4>Office</h4>
+                <p class="footer-address">Road-07, House-35, Block-G, Banani</p>
+                <p class="footer-address">Road-24, House-21, Block-K, Banani</p>
+                <a href="/customer/dashboard">Home</a>
+                <a href="/products">All Products</a>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <p class="footer-phone">+880 1323933930</p>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <a href="/profile">My Profile</a>
+                <a href="/orders">My Orders</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 Marketplace. Built with ❤️ in Bangladesh.</p>
+    </div>
+</footer>
+
+<script src="/static/cart.js"></script>
+<script src="/static/dashboard.js"></script>
+<script src="/static/orders.js"></script>
+
+</body>
+</html>

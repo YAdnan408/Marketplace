@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout – Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+    <div class="nav-brand">🛍 Marketplace</div>
+    <div class="nav-actions">
+        <a href="/cart" class="nav-back">← Back to Cart</a>
+        <a href="/profile" class="nav-icon" title="Profile">👤</a>
+        <a href="/cart" class="nav-icon nav-cart-icon" title="Cart">
+            🛒
+            <span class="cart-badge" style="display:none;">0</span>
+        </a>
+        <button class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
+</nav>
+
+<!-- ── CHECKOUT PAGE ── -->
+<div class="checkout-page">
+
+    <div class="checkout-header">
+        <h2 class="checkout-title">Checkout</h2>
+        <div class="checkout-steps">
+            <span class="checkout-step active">1. Shipping</span>
+            <span class="checkout-step-sep">›</span>
+            <span class="checkout-step">2. Confirm</span>
+            <span class="checkout-step-sep">›</span>
+            <span class="checkout-step">3. Done</span>
+        </div>
+    </div>
+
+    <!-- Empty cart redirect message -->
+    <div class="checkout-empty hidden" id="checkoutEmpty">
+        <span>🛒</span>
+        <h3>Your cart is empty</h3>
+        <p>Add products before proceeding to checkout.</p>
+        <a href="/customer/dashboard" class="hero-btn-primary">Start Shopping</a>
+    </div>
+
+    <!-- Main checkout layout -->
+    <div class="checkout-layout hidden" id="checkoutLayout">
+
+        <!-- LEFT: Shipping form -->
+        <div class="checkout-left">
+
+            <div class="checkout-section">
+                <h3 class="checkout-section-title">📦 Shipping Details</h3>
+
+                <div id="checkoutError" class="error-msg hidden"></div>
+
+                <div class="field-group">
+                    <label for="shippingName">Full Name</label>
+                    <input type="text" id="shippingName" placeholder="Your full name">
+                </div>
+                <div class="field-group">
+                    <label for="shippingPhone">Phone Number</label>
+                    <input type="text" id="shippingPhone" placeholder="01XXXXXXXXX">
+                </div>
+                <div class="field-group">
+                    <label for="shippingAddress">Delivery Address</label>
+                    <textarea id="shippingAddress" rows="3"
+                        placeholder="House, Road, Block, Area, City"></textarea>
+                </div>
+
+                <div class="checkout-use-profile">
+                    <button class="checkout-use-profile-btn" id="useProfileAddressBtn" type="button">
+                        📋 Use my profile address
+                    </button>
+                </div>
+            </div>
+
+            <div class="checkout-section">
+                <h3 class="checkout-section-title">💳 Payment Method</h3>
+                <div class="checkout-payment-options">
+                    <label class="checkout-payment-option checkout-payment-selected">
+                        <input type="radio" name="payment" value="cod" checked>
+                        <span class="checkout-payment-icon">💵</span>
+                        <div>
+                            <strong>Cash on Delivery</strong>
+                            <p>Pay when your order arrives</p>
+                        </div>
+                        <span class="checkout-payment-check">✓</span>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT: Order summary -->
+        <div class="checkout-right">
+
+            <div class="checkout-summary-card">
+                <h3 class="checkout-section-title">🧾 Order Summary</h3>
+
+                <div class="checkout-items-list" id="checkoutItemsList"></div>
+
+                <div class="checkout-summary-divider"></div>
+
+                <div class="checkout-summary-row">
+                    <span>Subtotal (<span id="checkoutItemCount">0</span> items)</span>
+                    <span id="checkoutSubtotal">৳0.00</span>
+                </div>
+                <div class="checkout-summary-row">
+                    <span>Shipping</span>
+                    <span id="checkoutShipping" class="cart-shipping-free">Free</span>
+                </div>
+
+                <div class="checkout-summary-divider"></div>
+
+                <div class="checkout-summary-row checkout-summary-total">
+                    <span>Total</span>
+                    <span id="checkoutTotal">৳0.00</span>
+                </div>
+
+                <button class="checkout-place-order-btn" id="placeOrderBtn">
+                    <span id="placeOrderBtnText">Place Order →</span>
+                    <span id="placeOrderBtnLoader" class="spinner" style="display:none;"></span>
+                </button>
+
+                <p class="checkout-terms">
+                    By placing your order, you agree to our terms of service.
+                    All prices are in BDT (৳).
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <div class="footer-logo">🛍 Marketplace</div>
+            <p class="footer-tagline">Bangladesh's local marketplace for everyone.</p>
+        </div>
+        <div class="footer-links">
+            <div class="footer-col">
+                <h4>Office</h4>
+                <p class="footer-address">Road-07, House-35, Block-G, Banani</p>
+                <p class="footer-address">Road-24, House-21, Block-K, Banani</p>
+                <a href="/customer/dashboard">Home</a>
+                <a href="/products">All Products</a>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <p class="footer-phone">+880 1323933930</p>
+                <a href="#" class="footer-social-link">
+                    <svg class="footer-social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    marketplace
+                </a>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <a href="/profile">My Profile</a>
+                <a href="/orders">My Orders</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 Marketplace. Built with ❤️ in Bangladesh.</p>
+    </div>
+</footer>
+
+<script src="/static/cart.js"></script>
+<script src="/static/dashboard.js"></script>
+<script src="/static/checkout.js"></script>
+
+</body>
+</html>
