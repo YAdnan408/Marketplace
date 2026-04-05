@@ -10,8 +10,8 @@ def create_app():
     )
 
     # ── Load config ───────────────────────────────────────────────────────────
-    from config import Config
-    app.config.from_object(Config)
+    from .config import get_config
+    app.config.from_object(get_config())
 
     # ── Init extensions ───────────────────────────────────────────────────────
     db.init_app(app)

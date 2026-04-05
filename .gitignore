@@ -24,6 +24,3 @@ instance/
 # OS files
 .DS_Store
 Thumbs.db
-
-# 🔴 IMPORTANT: Secret config file
-config.py
