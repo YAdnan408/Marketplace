@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -8,9 +8,10 @@ from .exceptions import (
     UserNotFoundError,
     InvalidCredentialsError,
 )
+from .interfaces import IUserService
 
 
-class BaseUserService(ABC):
+class BaseUserService(IUserService):
     """
     Template Method base for all user-type services.
 

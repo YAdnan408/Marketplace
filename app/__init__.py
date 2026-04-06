@@ -13,9 +13,6 @@ def create_app():
     from .config import get_config
     app.config.from_object(get_config())
 
-    # ── Force debug from config — overrides FLASK_DEBUG env var ──────────────
-    app.debug = app.config.get("DEBUG", False)
-
     # ── Init extensions ───────────────────────────────────────────────────────
     db.init_app(app)
     migrate.init_app(app, db)
