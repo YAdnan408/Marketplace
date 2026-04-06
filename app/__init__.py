@@ -27,9 +27,10 @@ def create_app():
     app.register_blueprint(customer_frontend_bp)
     app.register_blueprint(seller_frontend_bp)
 
-    # Modules (API)
-    from .modules.user.routes import user_bp
-    from .modules.product.routes import product_bp
+    # Modules (API) — import from each module's public __init__.py
+    from .modules.user import user_bp
+    from .modules.product import product_bp
+    # TODO: Add order blueprint import here when it's created
     from .modules.order.routes import order_bp
     app.register_blueprint(user_bp)
     app.register_blueprint(product_bp)

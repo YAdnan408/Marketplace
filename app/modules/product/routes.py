@@ -1,15 +1,19 @@
 import os
 from flask import Blueprint, request, jsonify, session, current_app
-from .service import ProductService
+
 from app.decorators import login_required, seller_required, customer_required
+from app.shared.file_upload import allowed_file, get_extension, save_upload
+
+from .product_repository import ProductRepository
+from .category_repository import CategoryRepository
+from .product_service import ProductService
+from .exceptions import ProductValidationError, ProductNotFoundError
 
 product_bp = Blueprint("product", __name__, url_prefix="/api")
 
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
+# ── Dependency wiring (DIP) ───────────────────────────────────────────────────
 
-
-def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+_product_service = ProductService(ProductRepository(), CategoryRepository())
 
 
 # ── Customer: Get categories ──────────────────────────────────────────────────
@@ -17,8 +21,7 @@ def allowed_file(filename):
 @product_bp.route("/customer/categories", methods=["GET"])
 @login_required
 def get_categories_customer():
-    categories = ProductService.get_categories()
-    return jsonify(categories), 200
+    return jsonify(_product_service.get_categories()), 200
 
 
 # ── Customer/Seller: Browse products (role-aware) ─────────────────────────────
@@ -26,17 +29,12 @@ def get_categories_customer():
 @product_bp.route("/products", methods=["GET"])
 @login_required
 def get_products():
-    user_id = session["user_id"]
     user_type = session.get("user_type")
-
     if user_type == "customer":
-        products = ProductService.get_all_products()
-    elif user_type == "seller":
-        products = ProductService.get_seller_products(user_id)
-    else:
-        return jsonify({"error": "Invalid user type"}), 400
-
-    return jsonify(products), 200
+        return jsonify(_product_service.get_all_products()), 200
+    if user_type == "seller":
+        return jsonify(_product_service.get_seller_products(session["user_id"])), 200
+    return jsonify({"error": "Invalid user type"}), 400
 
 
 # ── Customer: Get single product detail ──────────────────────────────────────
@@ -44,9 +42,10 @@ def get_products():
 @product_bp.route("/product/<int:product_id>", methods=["GET"])
 @customer_required
 def get_product_detail(product_id):
-    product = ProductService.get_product_detail(product_id)
-    if product is None:
-        return jsonify({"error": "Product not found"}), 404
+    try:
+        product = _product_service.get_product_detail(product_id)
+    except ProductNotFoundError as exc:
+        return jsonify({"error": str(exc)}), 404
     return jsonify(product), 200
 
 
@@ -55,12 +54,10 @@ def get_product_detail(product_id):
 @product_bp.route("/product", methods=["POST"])
 @seller_required
 def add_product():
-    data = request.json
-    result, error = ProductService.add_product(session["user_id"], data)
-
-    if error:
-        return jsonify({"error": error}), 400
-
+    try:
+        result = _product_service.add_product(session["user_id"], request.json)
+    except ProductValidationError as exc:
+        return jsonify({"error": str(exc)}), 400
     return jsonify({"message": "Product added successfully.", "product": result}), 201
 
 
@@ -69,12 +66,10 @@ def add_product():
 @product_bp.route("/product/<int:product_id>", methods=["PUT"])
 @seller_required
 def update_product(product_id):
-    data = request.json
-    result, error = ProductService.update_product(session["user_id"], product_id, data)
-
-    if error:
-        return jsonify({"error": error}), 400
-
+    try:
+        result = _product_service.update_product(session["user_id"], product_id, request.json)
+    except ProductValidationError as exc:
+        return jsonify({"error": str(exc)}), 400
     return jsonify({"message": "Product updated successfully.", "product": result}), 200
 
 
@@ -83,7 +78,7 @@ def update_product(product_id):
 @product_bp.route("/product/<int:product_id>", methods=["DELETE"])
 @seller_required
 def delete_product(product_id):
-    result = ProductService.delete_product(session["user_id"], product_id)
+    result = _product_service.delete_product(session["user_id"], product_id)
     return jsonify(result), 200
 
 
@@ -92,28 +87,22 @@ def delete_product(product_id):
 @product_bp.route("/product/<int:product_id>/image", methods=["POST"])
 @seller_required
 def upload_product_image(product_id):
-    if "image" not in request.files:
+    file = request.files.get("image")
+    if file is None or file.filename == "":
         return jsonify({"error": "No image file provided."}), 400
-
-    file = request.files["image"]
-
-    if file.filename == "":
-        return jsonify({"error": "No file selected."}), 400
 
     if not allowed_file(file.filename):
         return jsonify({"error": "Invalid file type. Allowed: png, jpg, jpeg, gif, webp."}), 400
 
-    upload_folder = os.path.join(current_app.static_folder, "uploads", "product_images")
-    os.makedirs(upload_folder, exist_ok=True)
-
-    ext = file.filename.rsplit(".", 1)[1].lower()
+    ext = get_extension(file.filename)
     image_name = f"product_{product_id}_{session['user_id']}.{ext}"
-    file.save(os.path.join(upload_folder, image_name))
+    upload_folder = os.path.join(current_app.static_folder, "uploads", "product_images")
+    save_upload(file, upload_folder, image_name)
 
-    updated = ProductService.update_product_image(session["user_id"], product_id, image_name)
+    updated = _product_service.update_product_image(session["user_id"], product_id, image_name)
     return jsonify({
         "message": "Product image uploaded successfully.",
-        "product": updated
+        "product": updated,
     }), 200
 
 
@@ -122,5 +111,4 @@ def upload_product_image(product_id):
 @product_bp.route("/seller/categories", methods=["GET"])
 @seller_required
 def get_categories_seller():
-    categories = ProductService.get_categories()
-    return jsonify(categories), 200
+    return jsonify(_product_service.get_categories()), 200
