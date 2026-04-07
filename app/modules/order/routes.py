@@ -1,8 +1,22 @@
 from flask import Blueprint, request, jsonify, session
-from .service import OrderService
+
 from app.decorators import customer_required
 
+from .order_repository import OrderRepository
+from .order_service import OrderService
+from .exceptions import (
+    OrderValidationError,
+    InsufficientStockError,
+    OrderPlacementError,
+)
+
 order_bp = Blueprint("order", __name__, url_prefix="/api")
+
+# ── Dependency wiring (DIP) ───────────────────────────────────────────────────
+# Concrete repo injected into service here at the composition root.
+# To swap implementations (e.g. for testing), only this section changes.
+
+_order_service = OrderService(OrderRepository())
 
 
 # ── Checkout: Place order ─────────────────────────────────────────────────────
@@ -14,21 +28,23 @@ def place_order():
 
     cart_items       = data.get("cart_items", [])
     shipping_address = data.get("shipping_address", "")
-    shipping_cost    = data.get("shipping_cost", 0)     # received from frontend
+    shipping_cost    = data.get("shipping_cost", 0)
 
-    result, error = OrderService.place_order(
-        customer_id=session["user_id"],
-        cart_items=cart_items,
-        shipping_address=shipping_address,
-        shipping_cost=shipping_cost
-    )
-
-    if error:
-        return jsonify({"error": error}), 400
+    try:
+        result = _order_service.place_order(
+            customer_id=session["user_id"],
+            cart_items=cart_items,
+            shipping_address=shipping_address,
+            shipping_cost=shipping_cost,
+        )
+    except (OrderValidationError, InsufficientStockError) as exc:
+        return jsonify({"error": str(exc)}), 400
+    except OrderPlacementError as exc:
+        return jsonify({"error": str(exc)}), 500
 
     return jsonify({
         "message": "Order placed successfully!",
-        "order": result
+        "order":   result,
     }), 201
 
 
@@ -37,5 +53,5 @@ def place_order():
 @order_bp.route("/orders", methods=["GET"])
 @customer_required
 def get_orders():
-    orders = OrderService.get_customer_orders(session["user_id"])
+    orders = _order_service.get_customer_orders(session["user_id"])
     return jsonify(orders), 200
