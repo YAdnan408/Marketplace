@@ -51,6 +51,14 @@ class ICategoryRepository(ABC):
     @abstractmethod
     def get_by_id(self, category_id: int):
         ...
+    
+    @abstractmethod
+    def create(self, name: str, description: str = ""):
+        ...
+
+    @abstractmethod
+    def get_by_name(self, name: str):
+        ...
 
 
 # ── Service interface ─────────────────────────────────────────────────────────

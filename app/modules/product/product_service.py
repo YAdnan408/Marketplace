@@ -1,5 +1,5 @@
 from .interfaces import IProductService, IProductRepository, ICategoryRepository
-from .exceptions import ProductValidationError, ProductNotFoundError
+from .exceptions import DuplicateCategoryError, ProductValidationError, ProductNotFoundError
 
 
 class ProductService(IProductService):
@@ -145,3 +145,10 @@ class ProductService(IProductService):
 
     def get_categories(self) -> list:
         return [{"id": c.id, "name": c.name} for c in self._categories.get_all()]
+    
+    def add_category(self, name: str, description: str = "") -> dict:
+        existing = self._categories.get_by_name(name)
+        if existing:
+            raise DuplicateCategoryError(f"Category '{name}' already exists.")
+        category = self._categories.create(name, description)
+        return {"id": category.id, "name": category.name, "description": category.description}

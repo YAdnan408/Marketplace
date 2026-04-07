@@ -7,7 +7,7 @@ from app.shared.file_upload import allowed_file, get_extension, save_upload
 from .product_repository import ProductRepository
 from .category_repository import CategoryRepository
 from .product_service import ProductService
-from .exceptions import ProductValidationError, ProductNotFoundError
+from .exceptions import ProductValidationError, ProductNotFoundError, DuplicateCategoryError
 
 product_bp = Blueprint("product", __name__, url_prefix="/api")
 
@@ -22,6 +22,20 @@ _product_service = ProductService(ProductRepository(), CategoryRepository())
 @login_required
 def get_categories_customer():
     return jsonify(_product_service.get_categories()), 200
+
+@product_bp.route("/customer/categories", methods=["POST"])
+@login_required
+def add_category():
+    try:
+        name = request.json.get("name", "").strip()
+        description = request.json.get("description", "").strip()
+        if not name:
+            return jsonify({"error": "Category name is required."}), 400
+
+        category = _product_service.add_category(name, description)
+        return jsonify({"message": "Category added successfully.", "category": category}), 201
+    except DuplicateCategoryError as exc:
+        return jsonify({"error": str(exc)}), 400
 
 
 # ── Customer/Seller: Browse products (role-aware) ─────────────────────────────
@@ -104,11 +118,3 @@ def upload_product_image(product_id):
         "message": "Product image uploaded successfully.",
         "product": updated,
     }), 200
-
-
-# ── Seller: Get categories ────────────────────────────────────────────────────
-
-@product_bp.route("/seller/categories", methods=["GET"])
-@seller_required
-def get_categories_seller():
-    return jsonify(_product_service.get_categories()), 200
