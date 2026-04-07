@@ -9,7 +9,7 @@ from .category_repository import CategoryRepository
 from .product_service import ProductService
 from .exceptions import ProductValidationError, ProductNotFoundError, DuplicateCategoryError
 
-product_bp = Blueprint("product", __name__, url_prefix="/api")
+product_bp = Blueprint("product", __name__, url_prefix="/api/products")
 
 # ── Dependency wiring (DIP) ───────────────────────────────────────────────────
 
@@ -18,12 +18,12 @@ _product_service = ProductService(ProductRepository(), CategoryRepository())
 
 # ── Customer: Get categories ──────────────────────────────────────────────────
 
-@product_bp.route("/customer/categories", methods=["GET"])
+@product_bp.route("/categories", methods=["GET"])
 @login_required
 def get_categories_customer():
     return jsonify(_product_service.get_categories()), 200
 
-@product_bp.route("/customer/categories", methods=["POST"])
+@product_bp.route("/categories", methods=["POST"])
 @login_required
 def add_category():
     try:
@@ -40,7 +40,7 @@ def add_category():
 
 # ── Customer/Seller: Browse products (role-aware) ─────────────────────────────
 
-@product_bp.route("/products", methods=["GET"])
+@product_bp.route("/", methods=["GET"])
 @login_required
 def get_products():
     user_type = session.get("user_type")
@@ -53,7 +53,7 @@ def get_products():
 
 # ── Customer: Get single product detail ──────────────────────────────────────
 
-@product_bp.route("/product/<int:product_id>", methods=["GET"])
+@product_bp.route("/<int:product_id>", methods=["GET"])
 @customer_required
 def get_product_detail(product_id):
     try:
@@ -65,7 +65,7 @@ def get_product_detail(product_id):
 
 # ── Seller: Add product ───────────────────────────────────────────────────────
 
-@product_bp.route("/product", methods=["POST"])
+@product_bp.route("/", methods=["POST"])
 @seller_required
 def add_product():
     try:
@@ -77,7 +77,7 @@ def add_product():
 
 # ── Seller: Update product ────────────────────────────────────────────────────
 
-@product_bp.route("/product/<int:product_id>", methods=["PUT"])
+@product_bp.route("/<int:product_id>", methods=["PUT"])
 @seller_required
 def update_product(product_id):
     try:
@@ -89,7 +89,7 @@ def update_product(product_id):
 
 # ── Seller: Delete product ────────────────────────────────────────────────────
 
-@product_bp.route("/product/<int:product_id>", methods=["DELETE"])
+@product_bp.route("/<int:product_id>", methods=["DELETE"])
 @seller_required
 def delete_product(product_id):
     result = _product_service.delete_product(session["user_id"], product_id)
@@ -98,7 +98,7 @@ def delete_product(product_id):
 
 # ── Seller: Upload product image ──────────────────────────────────────────────
 
-@product_bp.route("/product/<int:product_id>/image", methods=["POST"])
+@product_bp.route("/image/<int:product_id>", methods=["POST"])
 @seller_required
 def upload_product_image(product_id):
     file = request.files.get("image")
