@@ -2,7 +2,6 @@ from .interfaces import IOrderService, IOrderRepository
 from .exceptions import (
     OrderValidationError,
     InsufficientStockError,
-    OrderPlacementError,
 )
 
 
@@ -103,30 +102,21 @@ class OrderService(IOrderService):
         total_price = subtotal + float(shipping_cost)
 
         # ── Persist atomically ────────────────────────────────────
-        try:
-            order = self._repo.create_order(
-                customer_id=customer_id,
-                total_price=total_price,
-                shipping_address=shipping_address.strip(),
-            )
+        order = self._repo.create_order(
+            customer_id=customer_id,
+            total_price=total_price,
+            shipping_address=shipping_address.strip(),
+        )
 
-            # single INSERT ... VALUES (...), (...), ... for all items
-            self._repo.create_order_items(order.id, validated_items)
+        # single INSERT ... VALUES (...), (...), ... for all items
+        self._repo.create_order_items(order.id, validated_items)
 
-            # in-memory only — no DB calls, flushed together on commit
-            for item in validated_items:
-                self._repo.decrement_stock(item["product"], item["qty"])
+        # in-memory only — no DB calls, flushed together on commit
+        for item in validated_items:
+            self._repo.decrement_stock(item["product"], item["qty"])
 
-            self._repo.commit()
-
-        except (OrderValidationError, InsufficientStockError):
-            self._repo.rollback()
-            raise
-        except Exception as exc:
-            self._repo.rollback()
-            raise OrderPlacementError(
-                f"Order could not be placed. Please try again. ({exc})"
-            )
+        # repo commits and rolls back on failure — re-raises for global handler
+        self._repo.atomic_commit()
 
         return {
             "order_id":    order.id,

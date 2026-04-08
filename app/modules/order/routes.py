@@ -4,11 +4,6 @@ from app.decorators import customer_required
 
 from .order_repository import OrderRepository
 from .order_service import OrderService
-from .exceptions import (
-    OrderValidationError,
-    InsufficientStockError,
-    OrderPlacementError,
-)
 
 order_bp = Blueprint("order", __name__, url_prefix="/api/orders")
 
@@ -30,17 +25,12 @@ def place_order():
     shipping_address = data.get("shipping_address", "")
     shipping_cost    = data.get("shipping_cost", 0)
 
-    try:
-        result = _order_service.place_order(
-            customer_id=session["user_id"],
-            cart_items=cart_items,
-            shipping_address=shipping_address,
-            shipping_cost=shipping_cost,
-        )
-    except (OrderValidationError, InsufficientStockError) as exc:
-        return jsonify({"error": str(exc)}), 400
-    except OrderPlacementError as exc:
-        return jsonify({"error": str(exc)}), 500
+    result = _order_service.place_order(
+        customer_id=session["user_id"],
+        cart_items=cart_items,
+        shipping_address=shipping_address,
+        shipping_cost=shipping_cost,
+    )
 
     return jsonify({
         "message": "Order placed successfully!",
