@@ -17,7 +17,7 @@ async function init() {
 
 async function loadProducts() {
     try {
-        const res = await fetch("/api/products");
+        const res = await fetch("/api/products/");
 
         if (res.status === 403) {
             window.location.href = "/login";
@@ -37,7 +37,7 @@ async function loadProducts() {
 
 async function loadCategories() {
     try {
-        const res = await fetch("/api/seller/categories");
+        const res = await fetch("/api/products/categories");
         const categories = await res.json();
         const select = document.getElementById("productCategory");
 
@@ -194,14 +194,14 @@ async function saveProduct() {
 
         if (editingProductId) {
             // Update existing product
-            res = await fetch(`/api/product/${editingProductId}`, {
+            res = await fetch(`/api/products/${editingProductId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             });
         } else {
             // Add new product
-            res = await fetch("/api/product", {
+            res = await fetch("/api/products/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
@@ -241,7 +241,7 @@ async function uploadProductImage(productId, file) {
     formData.append("image", file);
 
     try {
-        await fetch(`/api/product/${productId}/image`, {
+        await fetch(`/api/products/image/${productId}`, {
             method: "POST",
             body: formData
         });
@@ -273,7 +273,7 @@ async function confirmDelete() {
     btnLoader.style.display = "inline-block";
 
     try {
-        const res = await fetch(`/api/product/${pendingDeleteId}`, {
+        const res = await fetch(`/api/products/${pendingDeleteId}`, {
             method: "DELETE"
         });
 

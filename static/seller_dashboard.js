@@ -6,7 +6,7 @@ async function init() {
 
 async function loadSellerStats() {
     try {
-        const res = await fetch("/api/products");
+        const res = await fetch("/api/products/");
         if (res.status === 403) { window.location.href = "/login"; return; }
 
         const products = await res.json();

@@ -28,7 +28,7 @@ async function init() {
 
 async function loadProducts() {
     try {
-        const res = await fetch("/api/products");
+        const res = await fetch("/api/products/");
         if (res.status === 403) { window.location.href = "/login"; return; }
 
         allProducts = await res.json();
@@ -47,7 +47,7 @@ async function loadProducts() {
 
 async function loadCategories() {
     try {
-        const res = await fetch("/api/customer/categories");
+        const res = await fetch("/api/products/categories");
         const categories = await res.json();
         renderCategoryStrip(categories);
     } catch (err) {

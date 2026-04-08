@@ -34,7 +34,7 @@ async function init() {
 // ── Fetch ─────────────────────────────────────────────────────────────────────
 async function loadProducts() {
     try {
-        const res = await fetch("/api/products");
+        const res = await fetch("/api/products/");
         if (res.status === 403) { window.location.href = "/login"; return; }
         allProducts = await res.json();
     } catch (err) {

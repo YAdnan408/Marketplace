@@ -25,7 +25,7 @@ function getProductIdFromUrl() {
 
 async function loadProduct(productId) {
     try {
-        const res = await fetch(`/api/product/${productId}`);
+        const res = await fetch(`/api/products/${productId}`);
 
         if (res.status === 401 || res.status === 403) {
             window.location.href = "/login";
