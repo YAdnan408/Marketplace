@@ -18,27 +18,34 @@ class OrderRepository(IOrderRepository):
         db.session.flush()   # obtain order.id without committing yet
         return order
 
-    def create_order_item(
-        self,
-        order_id: int,
-        product_id: int,
-        seller_id: int,
-        quantity: int,
-        price: float,
-    ):
-        item = OrderItem(
-            order_id=order_id,
-            product_id=product_id,
-            seller_id=seller_id,
-            quantity=quantity,
-            price=price,
-        )
-        db.session.add(item)
-        return item
+    def create_order_items(self, order_id: int, validated_items: list) -> None:
+        """Bulk-insert all order items in a single round-trip."""
+        db.session.add_all([
+            OrderItem(
+                order_id=order_id,
+                product_id=item["product"].id,
+                seller_id=item["seller_id"],
+                quantity=item["qty"],
+                price=item["price"],
+            )
+            for item in validated_items
+        ])
 
-    def get_product_for_checkout(self, product_id: int):
-        """Row-level lock ensures safe concurrent stock decrement."""
-        return Product.query.with_for_update().get(product_id)
+    def get_products_for_checkout(self, product_ids: list[int]) -> list:
+        """Batch row-level lock ordered by id.
+
+        Locking all rows in one round-trip (vs. N individual queries) minimises
+        lock-hold time.  The ORDER BY id guarantee means every concurrent
+        transaction acquires locks in the same sequence, making deadlocks
+        impossible.
+        """
+        return (
+            Product.query
+            .filter(Product.id.in_(product_ids))
+            .order_by(Product.id)
+            .with_for_update()
+            .all()
+        )
 
     def decrement_stock(self, product, quantity: int):
         product.stock_quantity -= quantity

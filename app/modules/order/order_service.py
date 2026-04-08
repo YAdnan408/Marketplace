@@ -46,16 +46,16 @@ class OrderService(IOrderService):
         shipping_address: str,
         shipping_cost: float = 0,
     ) -> dict:
-        # ── Validate inputs ───────────────────────────────────────
+        # ── 1. Validate inputs (no DB) ────────────────────────────
         if not cart_items:
             raise OrderValidationError("Your cart is empty.")
 
         if not shipping_address or not shipping_address.strip():
             raise OrderValidationError("Shipping address is required.")
 
-        # ── Validate stock and lock products ──────────────────────
-        validated_items = []
-
+        # ── 2. Validate cart item shapes and build id→qty map ─────
+        # Done before any DB call so we fail fast on bad input.
+        requested: dict[int, dict] = {}
         for item in cart_items:
             product_id = item.get("id")
             qty        = item.get("qty", 0)
@@ -65,11 +65,24 @@ class OrderService(IOrderService):
                     f"Invalid cart item: {item.get('name', 'Unknown')}."
                 )
 
-            product = self._repo.get_product_for_checkout(product_id)
+            requested[int(product_id)] = {"qty": qty, "name": item.get("name")}
+
+        # ── 3. Single batch query: lock all rows at once ──────────
+        # Rows are locked in ascending id order, which guarantees every
+        # concurrent transaction acquires locks in the same sequence and
+        # therefore makes deadlocks impossible.
+        products = self._repo.get_products_for_checkout(list(requested.keys()))
+        products_by_id = {p.id: p for p in products}
+
+        # ── 4. Validate stock in pure Python (no further DB calls) ─
+        validated_items = []
+        for product_id, meta in requested.items():
+            product = products_by_id.get(product_id)
+            qty     = meta["qty"]
 
             if product is None:
                 raise OrderValidationError(
-                    f"Product '{item.get('name')}' no longer exists."
+                    f"Product '{meta['name']}' no longer exists."
                 )
 
             if product.stock_quantity < qty:
@@ -97,14 +110,11 @@ class OrderService(IOrderService):
                 shipping_address=shipping_address.strip(),
             )
 
+            # single INSERT ... VALUES (...), (...), ... for all items
+            self._repo.create_order_items(order.id, validated_items)
+
+            # in-memory only — no DB calls, flushed together on commit
             for item in validated_items:
-                self._repo.create_order_item(
-                    order_id=order.id,
-                    product_id=item["product"].id,
-                    seller_id=item["seller_id"],
-                    quantity=item["qty"],
-                    price=item["price"],
-                )
                 self._repo.decrement_stock(item["product"], item["qty"])
 
             self._repo.commit()

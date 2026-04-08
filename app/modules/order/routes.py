@@ -10,7 +10,7 @@ from .exceptions import (
     OrderPlacementError,
 )
 
-order_bp = Blueprint("order", __name__, url_prefix="/api")
+order_bp = Blueprint("order", __name__, url_prefix="/api/orders")
 
 # ── Dependency wiring (DIP) ───────────────────────────────────────────────────
 # Concrete repo injected into service here at the composition root.
@@ -50,7 +50,7 @@ def place_order():
 
 # ── Order history: Get all orders for logged-in customer ──────────────────────
 
-@order_bp.route("/orders", methods=["GET"])
+@order_bp.route("/", methods=["GET"])
 @customer_required
 def get_orders():
     orders = _order_service.get_customer_orders(session["user_id"])

@@ -10,18 +10,11 @@ class IOrderRepository(ABC):
         ...
 
     @abstractmethod
-    def create_order_item(
-        self,
-        order_id: int,
-        product_id: int,
-        seller_id: int,
-        quantity: int,
-        price: float,
-    ):
+    def create_order_items(self, order_id: int, validated_items: list) -> None:
         ...
 
     @abstractmethod
-    def get_product_for_checkout(self, product_id: int):
+    def get_products_for_checkout(self, product_ids: list[int]) -> list:
         ...
 
     @abstractmethod
