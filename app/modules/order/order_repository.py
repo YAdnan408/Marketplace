@@ -65,8 +65,14 @@ class OrderRepository(IOrderRepository):
             customer_id=customer_id,
         ).first_or_404()
 
-    def commit(self) -> None:
-        db.session.commit()
+    def atomic_commit(self) -> None:
+        """Commit the transaction; rollback and re-raise on any DB error.
 
-    def rollback(self) -> None:
-        db.session.rollback()
+        Keeping commit/rollback inside the repo means the service never
+        touches transaction control — it only expresses business intent.
+        """
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise

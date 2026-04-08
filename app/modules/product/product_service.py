@@ -45,21 +45,21 @@ class ProductService(IProductService):
     def _parse_price(value) -> float:
         try:
             price = float(value)
-            if price < 0:
-                raise ValueError
-            return price
         except (TypeError, ValueError):
             raise ProductValidationError("Price must be a valid positive number.")
+        if price < 0:
+            raise ProductValidationError("Price must be a valid positive number.")
+        return price
 
     @staticmethod
     def _parse_stock(value) -> int:
         try:
             qty = int(value)
-            if qty < 0:
-                raise ValueError
-            return qty
         except (TypeError, ValueError):
             raise ProductValidationError("Stock quantity must be a valid non-negative number.")
+        if qty < 0:
+            raise ProductValidationError("Stock quantity must be a valid non-negative number.")
+        return qty
 
     @staticmethod
     def _parse_category_id(value):
@@ -68,7 +68,7 @@ class ProductService(IProductService):
         try:
             return int(value)
         except (TypeError, ValueError):
-            return None
+            raise ProductValidationError("Category ID must be a valid integer.")
 
     # ── Customer ──────────────────────────────────────────────────────────────
 
@@ -133,6 +133,8 @@ class ProductService(IProductService):
 
     def delete_product(self, seller_id: int, product_id: int) -> dict:
         product = self._products.get_by_id_and_seller(product_id, seller_id)
+        if product is None:
+            raise ProductNotFoundError(f"Product {product_id} not found or not owned by you.")
         self._products.delete(product)
         return {"message": "Product deleted successfully."}
 

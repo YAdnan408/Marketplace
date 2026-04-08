@@ -9,11 +9,9 @@ from .seller_repository import SellerRepository
 from .customer_service import CustomerService
 from .seller_service import SellerService
 from .exceptions import (
-    UserValidationError,
-    UserAlreadyExistsError,
-    UserNotFoundError,
-    InvalidCredentialsError,
+    InvalidUserTypeError, UserValidationError
 )
+from ...shared.exceptions import InvalidFileError
 
 user_bp = Blueprint("user", __name__, url_prefix="/api")
 
@@ -30,7 +28,7 @@ def _get_service(user_type: str):
         return _customer_service
     if user_type == "seller":
         return _seller_service
-    return None
+    raise InvalidUserTypeError("Invalid account type. Choose customer or seller.")
 
 
 # ── Signup ────────────────────────────────────────────────────────────────────
@@ -39,13 +37,8 @@ def _get_service(user_type: str):
 def signup():
     data = request.json
     service = _get_service(data.get("user_type"))
-    if service is None:
-        return jsonify({"error": "Invalid account type. Choose customer or seller."}), 400
 
-    try:
-        result = service.signup(data)
-    except (UserValidationError, UserAlreadyExistsError) as exc:
-        return jsonify({"error": str(exc)}), 400
+    result = service.signup(data)
 
     session["user_id"] = result["id"]
     session["user_name"] = result["name"]
@@ -59,15 +52,8 @@ def signup():
 def login():
     data = request.json
     service = _get_service(data.get("user_type"))
-    if service is None:
-        return jsonify({"error": "Invalid account type. Choose customer or seller."}), 400
 
-    try:
-        result = service.login(data)
-    except UserValidationError as exc:
-        return jsonify({"error": str(exc)}), 400
-    except (UserNotFoundError, InvalidCredentialsError) as exc:
-        return jsonify({"error": str(exc)}), 401
+    result = service.login(data)
 
     session["user_id"] = result["id"]
     session["user_name"] = result["name"]
@@ -112,7 +98,7 @@ def get_profile():
 def update_profile():
     data = request.json
     if not data.get("name", "").strip():
-        return jsonify({"error": "Name cannot be empty."}), 400
+        raise UserValidationError("Name is required.")
 
     service = _get_service(session["user_type"])
     updated = service.update_profile(session["user_id"], data)
@@ -127,10 +113,10 @@ def update_profile():
 def upload_profile_image():
     file = request.files.get("image")
     if file is None or file.filename == "":
-        return jsonify({"error": "No image file provided."}), 400
+        raise InvalidFileError("No image file provided.")
 
     if not allowed_file(file.filename):
-        return jsonify({"error": "Invalid file type. Allowed: png, jpg, jpeg, gif, webp."}), 400
+        raise InvalidFileError("Invalid file type. Allowed: png, jpg, jpeg, gif, webp.")
 
     user_id = session["user_id"]
     user_type = session["user_type"]

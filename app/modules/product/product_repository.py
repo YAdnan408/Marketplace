@@ -28,7 +28,7 @@ class ProductRepository(IProductRepository):
         return Product.query.get(product_id)
 
     def get_by_id_and_seller(self, product_id: int, seller_id: int):
-        return Product.query.filter_by(id=product_id, seller_id=seller_id).first_or_404()
+        return Product.query.filter_by(id=product_id, seller_id=seller_id).first()
 
     def create(self, data: dict):
         product = Product(

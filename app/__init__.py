@@ -1,5 +1,6 @@
 from flask import Flask
 from .extensions import db, migrate
+from .errors import register_error_handlers
 
 
 def create_app():
@@ -16,6 +17,9 @@ def create_app():
     # ── Init extensions ───────────────────────────────────────────────────────
     db.init_app(app)
     migrate.init_app(app, db)
+
+    # ── Register error handlers ───────────────────────────────────────────────
+    register_error_handlers(app)
 
     # ── Register blueprints ───────────────────────────────────────────────────
 
