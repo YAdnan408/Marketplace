@@ -24,7 +24,7 @@ class BaseUserService(IUserService):
     """
 
     def __init__(self, repo) -> None:
-        self._repo = repo
+        self._repo = repo                 #The constructor stores the repository so the service can interact with the database
 
     # ── Abstract hooks ────────────────────────────────────────────────────────
 

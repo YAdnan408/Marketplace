@@ -30,8 +30,7 @@ def create_app():
     # Modules (API) — import from each module's public __init__.py
     from .modules.user import user_bp
     from .modules.product import product_bp
-    # TODO: Add order blueprint import here when it's created
-    from .modules.order.routes import order_bp
+    from .modules.order import order_bp
     app.register_blueprint(user_bp)
     app.register_blueprint(product_bp)
     app.register_blueprint(order_bp)
