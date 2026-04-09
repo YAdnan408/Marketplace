@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session
 
-from app.decorators import customer_required
+from app.decorators import customer_required, seller_required, login_required
 
 from .order_repository import OrderRepository
 from .order_service import OrderService
@@ -14,22 +14,18 @@ order_bp = Blueprint("order", __name__, url_prefix="/api/orders")
 _order_service = OrderService(OrderRepository())
 
 
-# ── Checkout: Place order ─────────────────────────────────────────────────────
+# ── Customer: Place order ─────────────────────────────────────────────────────
 
 @order_bp.route("/checkout", methods=["POST"])
 @customer_required
 def place_order():
     data = request.json
 
-    cart_items       = data.get("cart_items", [])
-    shipping_address = data.get("shipping_address", "")
-    shipping_cost    = data.get("shipping_cost", 0)
-
     result = _order_service.place_order(
         customer_id=session["user_id"],
-        cart_items=cart_items,
-        shipping_address=shipping_address,
-        shipping_cost=shipping_cost,
+        cart_items=data.get("cart_items", []),
+        shipping_address=data.get("shipping_address", ""),
+        shipping_cost=data.get("shipping_cost", 0),
     )
 
     return jsonify({
@@ -38,10 +34,26 @@ def place_order():
     }), 201
 
 
-# ── Order history: Get all orders for logged-in customer ──────────────────────
+# ── Customer / Seller: Get order history (role-aware) ─────────────────────────
 
 @order_bp.route("/", methods=["GET"])
-@customer_required
+@login_required
 def get_orders():
-    orders = _order_service.get_customer_orders(session["user_id"])
-    return jsonify(orders), 200
+    user_type = session.get("user_type")
+    if user_type == "customer":
+        return jsonify(_order_service.get_customer_orders(session["user_id"])), 200
+    if user_type == "seller":
+        return jsonify(_order_service.get_seller_orders(session["user_id"])), 200
+    return jsonify({"error": "Invalid user type"}), 400
+
+
+# ── Seller: Approve an order ──────────────────────────────────────────────────
+
+@order_bp.route("/approve/<int:order_id>", methods=["PATCH"])
+@seller_required
+def approve_order(order_id):
+    result = _order_service.approve_order(session["user_id"], order_id)
+    return jsonify({
+        "message": f"Order #{order_id} has been approved.",
+        "order":   result,
+    }), 200

@@ -31,6 +31,7 @@
         </p>
         <div class="hero-cta-group">
             <a href="/products" class="hero-btn-primary">My Products →</a>
+            <a href="/seller/orders" class="hero-btn-secondary">Orders Received →</a>
         </div>
         <div class="hero-stats">
             <div class="hero-stat">
@@ -41,6 +42,11 @@
             <div class="hero-stat">
                 <span class="hero-stat-num" id="statInStock">—</span>
                 <span class="hero-stat-label">In Stock</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+                <span class="hero-stat-num" id="statPendingOrders">—</span>
+                <span class="hero-stat-label">Pending Orders</span>
             </div>
             <div class="hero-stat-divider"></div>
             <div class="hero-stat">
@@ -63,7 +69,7 @@
                 <span>🧾</span>
                 <div>
                     <strong>Orders</strong>
-                    <p>Coming soon</p>
+                    <p>View &amp; approve</p>
                 </div>
             </div>
             <div class="hero-float-card hero-float-card-3">
@@ -95,13 +101,13 @@
                 <div class="seller-action-arrow">→</div>
             </div>
 
-            <div class="seller-action-card seller-action-card-disabled">
+            <div class="seller-action-card" onclick="window.location.href='/seller/orders'">
                 <div class="seller-action-icon">🧾</div>
                 <div class="seller-action-body">
                     <h3>Orders Received</h3>
-                    <p>View and manage incoming customer orders.</p>
+                    <p>View and approve incoming customer orders.</p>
                 </div>
-                <span class="seller-action-badge">Soon</span>
+                <div class="seller-action-arrow">→</div>
             </div>
 
             <div class="seller-action-card seller-action-card-disabled">

@@ -1,8 +1,10 @@
 // ── Seller Dashboard ──────────────────────────────────────────────────────────
 
 async function init() {
-    await loadSellerStats();
+    await Promise.all([loadSellerStats(), loadOrderStats()]);
 }
+
+// ── Product stats ─────────────────────────────────────────────────────────────
 
 async function loadSellerStats() {
     try {
@@ -19,6 +21,24 @@ async function loadSellerStats() {
 
     } catch (err) {
         console.error("Failed to load seller stats:", err);
+    }
+}
+
+// ── Order stats ───────────────────────────────────────────────────────────────
+
+async function loadOrderStats() {
+    try {
+        const res = await fetch("/api/orders/");
+        if (!res.ok) return;
+
+        const orders = await res.json();
+        const pending = orders.filter(o => o.status === "pending").length;
+
+        const statPending = document.getElementById("statPendingOrders");
+        if (statPending) statPending.textContent = pending;
+
+    } catch (err) {
+        console.error("Failed to load order stats:", err);
     }
 }
 

@@ -14,3 +14,11 @@ seller_frontend_bp = Blueprint(
 @frontend_seller_required
 def seller_dashboard():
     return render_template("seller_dashboard.html", user_name=session["user_name"])
+
+
+# ── Seller orders received page ───────────────────────────────────────────────
+
+@seller_frontend_bp.route("/seller/orders")
+@frontend_seller_required
+def seller_orders():
+    return render_template("seller_orders.html", user_name=session["user_name"])
