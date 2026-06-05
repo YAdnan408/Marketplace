@@ -2,7 +2,13 @@ from .interfaces import IOrderService, IOrderRepository
 from .exceptions import (
     OrderValidationError,
     InsufficientStockError,
+    OrderStatusError,
 )
+
+# Valid status transitions a seller may trigger
+_SELLER_ALLOWED_TRANSITIONS = {
+    "pending": "approved",
+}
 
 
 class OrderService(IOrderService):
@@ -36,7 +42,46 @@ class OrderService(IOrderService):
             "subtotal":     float(oi.price) * oi.quantity,
         }
 
-    # ── Place order ───────────────────────────────────────────────────────────
+    @staticmethod
+    def _serialize_seller_order(order, seller_id: int) -> dict:
+        """Serialise an order from the seller's perspective.
+
+        Includes all items but flags which belong to this seller.
+        Includes the customer's name and a seller-specific subtotal.
+        """
+        all_items = []
+        seller_subtotal = 0.0
+
+        for oi in order.order_items:
+            product = oi.product
+            item_dict = {
+                "product_id":   oi.product_id,
+                "product_name": product.name if product else "Deleted product",
+                "image_name":   product.image_name if product else "",
+                "quantity":     oi.quantity,
+                "unit_price":   float(oi.price),
+                "subtotal":     float(oi.price) * oi.quantity,
+                "is_mine":      oi.seller_id == seller_id,
+            }
+            all_items.append(item_dict)
+            if oi.seller_id == seller_id:
+                seller_subtotal += item_dict["subtotal"]
+
+        customer = order.customer
+        return {
+            "id":               order.id,
+            "status":           order.status,
+            "total_price":      float(order.total_price),
+            "seller_subtotal":  round(seller_subtotal, 2),
+            "shipping_address": order.shipping_address or "",
+            "created_at":       order.created_at.strftime("%d %b %Y, %I:%M %p"),
+            "item_count":       len(all_items),
+            "items":            all_items,
+            "customer_name":    customer.name if customer else "Unknown",
+            "customer_email":   customer.email if customer else "",
+        }
+
+    # ── Customer: Place order ─────────────────────────────────────────────────
 
     def place_order(
         self,
@@ -97,11 +142,11 @@ class OrderService(IOrderService):
                 "seller_id": product.seller_id,
             })
 
-        # ── Compute totals (never trust client-submitted prices) ──
+        # ── 5. Compute totals (never trust client-submitted prices) ─
         subtotal    = sum(i["price"] * i["qty"] for i in validated_items)
         total_price = subtotal + float(shipping_cost)
 
-        # ── Persist atomically ────────────────────────────────────
+        # ── 6. Persist atomically ─────────────────────────────────
         order = self._repo.create_order(
             customer_id=customer_id,
             total_price=total_price,
@@ -125,7 +170,7 @@ class OrderService(IOrderService):
             "item_count":  len(validated_items),
         }
 
-    # ── Get order history ─────────────────────────────────────────────────────
+    # ── Customer: Get order history ───────────────────────────────────────────
 
     def get_customer_orders(self, customer_id: int) -> list:
         orders = self._repo.get_orders_by_customer(customer_id)
@@ -136,3 +181,27 @@ class OrderService(IOrderService):
             )
             for order in orders
         ]
+
+    # ── Seller: Get received orders ───────────────────────────────────────────
+
+    def get_seller_orders(self, seller_id: int) -> list:
+        orders = self._repo.get_orders_by_seller(seller_id)
+        return [
+            self._serialize_seller_order(order, seller_id)
+            for order in orders
+        ]
+
+    # ── Seller: Approve an order ──────────────────────────────────────────────
+
+    def approve_order(self, seller_id: int, order_id: int) -> dict:
+        order = self._repo.get_order_by_id_and_seller(order_id, seller_id)
+
+        new_status = _SELLER_ALLOWED_TRANSITIONS.get(order.status)
+        if new_status is None:
+            raise OrderStatusError(
+                f"Cannot approve an order with status '{order.status}'. "
+                f"Only pending orders can be approved."
+            )
+
+        updated = self._repo.update_order_status(order, new_status)
+        return {"order_id": updated.id, "status": updated.status}

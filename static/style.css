@@ -6995,3 +6995,187 @@ section.category-strip {
         align-items: flex-start;
     }
 }
+/* ════════════════════════════════════════════
+   SELLER ORDERS PAGE
+════════════════════════════════════════════ */
+
+/* ── Status: approved ─────────────────────── */
+.order-status-approved {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+/* ── Filter tabs ──────────────────────────── */
+.seller-orders-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 0 44px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.seller-orders-tab {
+    padding: 8px 20px;
+    border: 1.5px solid var(--linen);
+    border-radius: 30px;
+    background: var(--white);
+    color: var(--text-muted);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.86rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s var(--ease);
+}
+
+.seller-orders-tab:hover {
+    border-color: var(--espresso);
+    color: var(--espresso);
+}
+
+.seller-orders-tab.active {
+    background: var(--espresso);
+    border-color: var(--espresso);
+    color: var(--gold-light);
+}
+
+/* ── Customer info row ────────────────────── */
+.seller-order-customer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 24px;
+    background: var(--sand);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.seller-order-customer-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.seller-order-customer-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--espresso);
+}
+
+.seller-order-customer-email {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+/* ── My items vs other seller items ──────── */
+.order-item-mine {
+    background: rgba(201, 168, 76, 0.05);
+}
+
+.order-item-other {
+    opacity: 0.55;
+}
+
+.order-item-other-label {
+    font-size: 0.72rem;
+    color: var(--text-light);
+    font-style: italic;
+    display: block;
+    margin-top: 2px;
+}
+
+/* ── Footer totals + approve ─────────────── */
+.seller-order-totals {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.seller-order-subtotal {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+}
+
+.seller-order-subtotal strong {
+    color: var(--espresso);
+    font-weight: 700;
+}
+
+.seller-approve-btn {
+    padding: 9px 22px;
+    background: var(--espresso);
+    color: var(--gold-light);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s var(--ease);
+    letter-spacing: 0.01em;
+}
+
+.seller-approve-btn:hover:not(:disabled) {
+    background: var(--brown);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(28, 20, 16, 0.2);
+}
+
+.seller-approve-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.seller-order-approved-badge {
+    padding: 6px 16px;
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+/* ── Toast notification ───────────────────── */
+.seller-toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    padding: 14px 22px;
+    border-radius: var(--radius-sm);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: var(--shadow-md);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+    max-width: 360px;
+}
+
+.seller-toast-show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.seller-toast-success {
+    background: var(--espresso);
+    color: var(--gold-light);
+}
+
+.seller-toast-error {
+    background: #9b1c1c;
+    color: #fff;
+}
+
+/* ── Responsive ───────────────────────────── */
+@media (max-width: 768px) {
+    .seller-orders-tabs { padding: 0 20px; }
+    .seller-order-customer { padding: 10px 16px; }
+    .seller-order-totals { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .seller-toast { left: 16px; right: 16px; bottom: 16px; }
+}

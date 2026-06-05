@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders Received – Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+    <div class="nav-brand">🛍 Marketplace</div>
+    <div class="nav-actions">
+        <a href="/seller/dashboard" class="nav-back">← Dashboard</a>
+        <a href="/profile" class="nav-icon" title="Profile">👤</a>
+        <button class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
+</nav>
+
+<!-- ── ORDERS PAGE ── -->
+<div class="orders-page">
+
+    <div class="orders-header">
+        <h2 class="orders-title">Orders Received</h2>
+        <span class="orders-count" id="ordersCount"></span>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="seller-orders-tabs" id="ordersTabs">
+        <button class="seller-orders-tab active" data-status="">All Orders</button>
+        <button class="seller-orders-tab" data-status="pending">Pending</button>
+        <button class="seller-orders-tab" data-status="approved">Approved</button>
+    </div>
+
+    <div class="orders-loading" id="ordersLoading">
+        <div class="loading-spinner"></div>
+        <p>Loading orders…</p>
+    </div>
+
+    <div class="orders-empty hidden" id="ordersEmpty">
+        <span>🧾</span>
+        <h3>No orders yet</h3>
+        <p>When customers purchase your products, their orders will appear here.</p>
+    </div>
+
+    <div class="orders-list hidden" id="ordersList"></div>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <div class="footer-logo">🛍 Marketplace</div>
+            <p class="footer-tagline">Bangladesh's local marketplace for everyone.</p>
+        </div>
+        <div class="footer-links">
+            <div class="footer-col">
+                <h4>Office</h4>
+                <p class="footer-address">Road-07, House-35, Block-G, Banani</p>
+                <p class="footer-address">Road-24, House-21, Block-K, Banani</p>
+                <a href="/products">My Products</a>
+                <a href="/seller/dashboard">Dashboard</a>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <p class="footer-phone">+880 1323933930</p>
+            </div>
+            <div class="footer-col">
+                <h4>Seller</h4>
+                <a href="/seller/dashboard">Dashboard</a>
+                <a href="/seller/orders">Orders Received</a>
+                <a href="/products">My Products</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 Marketplace. Built with ❤️ in Bangladesh.</p>
+    </div>
+</footer>
+
+<script src="/static/dashboard.js"></script>
+<script src="/static/seller_orders.js"></script>
+
+</body>
+</html>
